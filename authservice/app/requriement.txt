@@ -1,0 +1,8 @@
+flask 
+flask-Login 
+flask-Bcrypt 
+flask-WTF 
+FLask-Migrate 
+flask-SQLAlchemy 
+flask-Testing 
+python-decouple
