@@ -1,0 +1,9 @@
+Flask
+Flask-Bcrypt
+Flask-Login
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-Testing
+Flask-WTF
+email-validator
+python-decouple

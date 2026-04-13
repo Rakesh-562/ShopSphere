@@ -7,12 +7,13 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    created_on = db.Column(db.DateTime, nullable=False)
+    created_on = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, email, password, is_admin=False):
         self.email = email
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password).decode("utf-8")
+        self.created_on = datetime.utcnow()
         self.is_admin = is_admin
 
     def __repr__(self):
