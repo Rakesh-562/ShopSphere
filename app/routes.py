@@ -4,26 +4,19 @@ import uuid
 
 router = APIRouter()
 
-# ✅ GET ALL PRODUCTS
 @router.get("/products")
 def get_products():
-    response = es.search(
-        index="products",
-        body={"query": {"match_all": {}}}
-    )
-    products = [hit["_source"] for hit in response["hits"]["hits"]]
-    return products
+    response = es.search(index="products", body={"query": {"match_all": {}}})
+    return [hit["_source"] for hit in response["hits"]["hits"]]
 
 
-# ✅ ADD PRODUCT (WITH UNIQUE ID)
 @router.post("/products")
 def add_product(product: dict):
-    product_id = str(uuid.uuid4())   # unique id
+    product_id = str(uuid.uuid4())
     es.index(index="products", id=product_id, document=product)
     return {"message": "Product added successfully"}
 
 
-# ✅ SEARCH PRODUCTS
 @router.get("/products/search")
 def search_products(query: str):
     response = es.search(
@@ -39,6 +32,4 @@ def search_products(query: str):
             }
         }
     )
-    
-    products = [hit["_source"] for hit in response["hits"]["hits"]]
-    return products
+    return [hit["_source"] for hit in response["hits"]["hits"]]
