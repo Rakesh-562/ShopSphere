@@ -1,8 +1,9 @@
-from flask import Blueprint,flash,redirect,render_template,request,url_for
+from flask import Blueprint,flash,redirect,render_template,request,url_for,jsonify
 from flask_login import login_user,logout_user,login_required,current_user
 from app import db,bcrypt
 from app.accounts.models import User
 from .form import RegisterForm,LoginForm
+from flask_jwt_extended import create_access_token
 
 accounts_bp = Blueprint("accounts", __name__)
 @accounts_bp.route("/register",methods=["GET","POST"])
@@ -34,7 +35,21 @@ def login():
             flash("Invalid email and/or password.", "danger")
             return render_template("accounts/login.html", form=form)
     return render_template("accounts/login.html", form=form)
-
+@accounts_bp.route('/api/login',methods=['POST'])
+def api_login():
+    data=request.get_json()
+    email=data.get('email')
+    password=data.get('password')
+    user =User.query.filter_by(email=email).first()
+    if user and bcrypt.check_password_hash(user.password,password):
+        access_token=create_access_token(identity=str(user.id))
+        return jsonify({
+            "message":"Login successful",
+            "access_token":access_token
+        }),200
+    return jsonify({
+        "message":"Invalid email or password",
+    }),401
 
 @accounts_bp.route("/logout")
 @login_required

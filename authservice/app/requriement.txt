@@ -6,3 +6,4 @@ FLask-Migrate
 flask-SQLAlchemy 
 flask-Testing 
 python-decouple
+Flask-JWT_Extended

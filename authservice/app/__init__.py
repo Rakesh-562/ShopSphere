@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import DevelopmentConfig
+from flask_jwt_extended import JWTManager,create_access_token,jwt_required,get_jwt
 
 apps=Flask(__name__)
 login_manager=LoginManager()
@@ -12,8 +13,10 @@ login_manager.init_app(apps)
 bcrypt=Bcrypt(apps)
 db = SQLAlchemy()
 migrate = Migrate()
+jwt=JWTManager()
 apps.config.from_object(DevelopmentConfig)
 
+jwt.init_app(apps)
 db.init_app(apps)
 migrate.init_app(apps, db)
 from app.accounts.views import accounts_bp
