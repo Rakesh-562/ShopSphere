@@ -64,9 +64,6 @@ def create_order(request):
 
         if product["stock"] < qty:
             return Response({"error": f"Product {product_id} out of stock"}, status=400)
-        success = reduce_stock(product_id, qty)
-        if not success:
-            return Response({"error": "Stock update failed"}, status=500)
         price = Decimal(str(product["price"]))
         total += price * Decimal(qty)
 
@@ -88,7 +85,7 @@ def create_order(request):
         )
 
     clear_cart(user.id)
-    publish_order_event(order.id)
+    publish_order_event(order)
 
     serializer = OrderSerializer(order)
 

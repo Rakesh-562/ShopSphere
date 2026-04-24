@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def publish_order_event(order_id):
+def publish_order_event(order):
     try:
         connection = pika.BlockingConnection(
             pika.ConnectionParameters('localhost')
@@ -14,7 +14,17 @@ def publish_order_event(order_id):
         # Defining a topic exchange as per D6/D8 architecture
         channel.exchange_declare(exchange='shopsphere_events', exchange_type='topic')
 
-        message = {"order_id": order_id, "status": "created"}
+        message = {
+            "order_id": order.id,
+            "status": "created",
+            "items": [
+                {
+                    "product_id": item.product_id,
+                    "quantity": item.quantity,
+                }
+                for item in order.items.all()
+            ],
+        }
 
         # Publishing to 'order.created' topic
         channel.basic_publish(
@@ -23,7 +33,7 @@ def publish_order_event(order_id):
             body=json.dumps(message)
         )
         
-        logger.info(f"Published order.created for Order {order_id}")
+        logger.info(f"Published order.created for Order {order.id}")
         connection.close()
     except pika.exceptions.AMQPConnectionError:
-        logger.error("RabbitMQ is not running. Could not publish order event.")
+        logger.error("RabbitMQ is not running. Could not publish order event.")
